@@ -1,7 +1,7 @@
 'use client';
 
 import { RadioGroup } from '@headlessui/react';
-import { ArrowRight, Check, ChevronsUpDown } from 'lucide-react';
+import { ArrowRight, Check, ChevronsUpDown, Loader, Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import { useRef, useState } from 'react';
 import { Rnd } from 'react-rnd';
@@ -16,6 +16,9 @@ import { useUploadThing } from '~/lib/uploadthing';
 import { cn, formatPrice } from '~/lib/utils';
 import { COLORS, FINISHES, MATERIALS, MODELS } from '~/validators/option-validator';
 import { HandleComponent } from './handle-component';
+import { useMutation } from '@tanstack/react-query';
+import { SaveConfigArgs, saveConfig as _saveConfig } from '../actions';
+import { useRouter } from 'next/navigation';
 
 interface DesignConfiguratorProps {
   configId: string;
@@ -27,6 +30,7 @@ interface DesignConfiguratorProps {
 }
 
 export const DesignConfigurator = ({ configId, imageDimensions, imageUrl }: DesignConfiguratorProps) => {
+  const router = useRouter();
   const [options, setOptions] = useState<{
     color: (typeof COLORS)[number];
     model: (typeof MODELS)['options'][number];
@@ -51,6 +55,23 @@ export const DesignConfigurator = ({ configId, imageDimensions, imageUrl }: Desi
 
   const phoneRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  const { mutate: saveConfig, isPending } = useMutation({
+    mutationKey: ['save-config'],
+    mutationFn: async (args: SaveConfigArgs) => {
+      await Promise.all([saveConfiguration(), _saveConfig(args)]);
+    },
+    onError: (error: any) => {
+      toast({
+        title: `Error: ${error.message}`,
+        description: 'There was an error on our end. Please try again.',
+        variant: 'destructive',
+      });
+    },
+    onSuccess: () => {
+      router.push(`/configure/preview?id=${configId}`);
+    },
+  });
 
   const { startUpload } = useUploadThing('imageUploader');
 
@@ -128,30 +149,32 @@ export const DesignConfigurator = ({ configId, imageDimensions, imageUrl }: Desi
           default={{
             x: 150,
             y: 205,
-            width: imageDimensions.width / 4,
             height: imageDimensions.height / 4,
+            width: imageDimensions.width / 4,
           }}
           onResizeStop={(_, __, ref, ___, { x, y }) => {
             setRenderedDimensions({
               height: parseInt(ref.style.height.slice(0, -2)),
               width: parseInt(ref.style.width.slice(0, -2)),
             });
+
             setRenderedPosition({ x, y });
           }}
-          onDragStop={(_, { x, y }) => {
+          onDragStop={(_, data) => {
+            const { x, y } = data;
             setRenderedPosition({ x, y });
           }}
-          className='absolute z-20 border border-primary'
+          className='absolute z-20 border-[3px] border-primary'
           lockAspectRatio
           resizeHandleComponent={{
-            bottomLeft: <HandleComponent />,
             bottomRight: <HandleComponent />,
-            topLeft: <HandleComponent />,
+            bottomLeft: <HandleComponent />,
             topRight: <HandleComponent />,
+            topLeft: <HandleComponent />,
           }}
         >
           <div className='relative w-full h-full'>
-            <Image alt='design image' src={imageUrl} fill />
+            <Image src={imageUrl} fill alt='your image' className='pointer-events-none' />
           </div>
         </Rnd>
       </div>
@@ -282,8 +305,28 @@ export const DesignConfigurator = ({ configId, imageDimensions, imageUrl }: Desi
               <p className='font-medium whitespace-nowrap'>
                 {formatPrice((BASE_PRICE + options.finish.price + options.material.price) / 100)}
               </p>
-              <Button size='sm' className='w-full'>
-                Continue
+              <Button
+                disabled={isPending}
+                onClick={() => {
+                  saveConfig({
+                    color: options.color.value,
+                    model: options.model.value,
+                    finish: options.finish.value,
+                    material: options.material.value,
+                    configId,
+                  });
+                }}
+                size='sm'
+                className='w-full'
+              >
+                {isPending ? (
+                  <div className='flex items-center justify-center gap-1'>
+                    <Loader2 className='h-4 w-4 animate-spin' />
+                    <span>Saving...</span>
+                  </div>
+                ) : (
+                  <span>Continue</span>
+                )}
                 <ArrowRight className='h-4 w-4 ml-1.5 inline' />
               </Button>
             </div>
