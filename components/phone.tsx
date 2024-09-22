@@ -6,7 +6,7 @@ interface PhoneProps extends React.HTMLAttributes<HTMLDivElement> {
   dark?: boolean;
 }
 
-export const Phone = ({ imgSrc, dark = false, className, ...props }: PhoneProps) => {
+export const Phone = ({ imgSrc, className, dark = false, ...props }: PhoneProps) => {
   return (
     <div className={cn('relative pointer-events-none z-50 overflow-hidden', className)} {...props}>
       <img
