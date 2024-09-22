@@ -13,10 +13,98 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum CaseColor {
+  black
+  blue
+  rose
+}
+
+enum OrderStatus {
+  fulfilled
+  shipped
+  awaiting_shipment
+}
+
+enum PhoneModel {
+  iphonex
+  iphone11
+  iphone12
+  iphone13
+  iphone14
+  iphone15
+}
+
+enum CaseMaterial {
+  silicone
+  polycarbonate
+}
+
+enum CaseFinish {
+  smooth
+  textured
+}
+
 model Configuration {
-  id              String  @id @default(cuid()) @map("_id")
+  id              String        @id @default(cuid()) @map("_id")
   width           Int
   height          Int
   imageUrl        String
   croppedImageUrl String?
+  color           CaseColor?
+  model           PhoneModel?
+  material        CaseMaterial?
+  finish          CaseFinish?
+
+  Order Order[]
+}
+
+model User {
+  id     String  @id @default(cuid()) @map("_id")
+  email  String
+  orders Order[]
+
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  BillingAddress BillingAddress[]
+}
+
+model Order {
+  id              String            @id @default(cuid()) @map("_id")
+  configurationId String
+  configuration   Configuration     @relation(fields: [configurationId], references: [id])
+  user            User?             @relation(fields: [userId], references: [id])
+  userId          String?
+  amount          Float
+  isPaid          Boolean           @default(false)
+  status          OrderStatus       @default(awaiting_shipment)
+  ShippingAddress ShippingAddress[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ShippingAddress {
+  id          String  @id @default(cuid()) @map("_id")
+  name        String
+  street      String
+  city        String
+  postalCode  String
+  country     String
+  state       String?
+  phoneNumber String
+  order       Order   @relation(fields: [orderId], references: [id])
+  orderId     String
+}
+
+model BillingAddress {
+  id          String  @id @default(cuid()) @map("_id")
+  name        String
+  street      String
+  city        String
+  postalCode  String
+  country     String
+  state       String?
+  phoneNumber String
+  user        User    @relation(fields: [userId], references: [id])
+  userId      String
 }
