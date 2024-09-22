@@ -79,6 +79,7 @@ const config = {
       },
     },
   },
+  safelist: ['bg-zinc-900', 'bg-blue-950', 'bg-red-950'],
   plugins: [require('tailwindcss-animate')],
 } satisfies Config;
 
