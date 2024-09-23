@@ -2,6 +2,7 @@
 
 import { cn } from '~/lib/utils';
 import { usePathname } from 'next/navigation';
+import Image from 'next/image';
 
 const STEPS = [
   {
@@ -44,7 +45,10 @@ const Steps = () => {
 
               <span className={cn(i !== 0 ? 'lg:pl-9' : '', 'flex items-center px-6 py-4 text-sm font-medium')}>
                 <span className='flex-shrink-0'>
-                  <img
+                  <Image
+                    width={80}
+                    height={80}
+                    alt=''
                     src={imgPath}
                     className={cn('flex h-20 w-20 object-contain items-center justify-center', {
                       'border-none': isCompleted,
