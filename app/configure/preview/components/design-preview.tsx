@@ -1,19 +1,29 @@
 'use client';
 
 import { Configuration } from '@prisma/client';
+import { useMutation } from '@tanstack/react-query';
 import { ArrowRight, Check } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Confetti from 'react-dom-confetti';
 import { Phone } from '~/components/phone';
 import { Button } from '~/components/ui/button';
 import { BASE_PRICE, PRODUCT_PRICES } from '~/config/product';
 import { cn, formatPrice } from '~/lib/utils';
 import { COLORS, MODELS } from '~/validators/option-validator';
+import { createCheckoutSession } from '../actions';
+import { toast } from '~/hooks/use-toast';
+import { useRouter } from 'next/navigation';
+import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs';
+import { LoginModal } from '~/components/login-modal';
 
 export const DesingPreview = ({ configuration }: { configuration: Configuration }) => {
+  const router = useRouter();
   const [showConfetti, setShowConfetti] = useState<boolean>(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);
 
-  const { color, model, finish, material } = configuration;
+  const { user } = useKindeBrowserClient();
+
+  const { color, model, finish, material, id } = configuration;
   const tw = COLORS.find((c) => c.value === color)?.tw;
   const { label: modelLabel } = MODELS.options.find(({ value }) => value === model)!;
 
@@ -48,15 +58,42 @@ export const DesingPreview = ({ configuration }: { configuration: Configuration 
   if (material === 'polycarbonate') totalPrice += PRODUCT_PRICES.material.polycarbonate;
   if (finish === 'textured') totalPrice += PRODUCT_PRICES.finish.textured;
 
-  const handleCheckout = () => {
-    // Handle checkout
-  };
+  const { mutate } = useMutation({
+    mutationKey: ['get-checkout-session'],
+    mutationFn: createCheckoutSession,
+    onSuccess: ({ url }) => {
+      if (url) {
+        router.push(url);
+      } else throw new Error('Unable to retrieve payment URL.');
+    },
+    onError: (error: any) => {
+      toast({
+        title: `Error: ${error.message}`,
+        description: 'There was an error on our end. Please try again.',
+        variant: 'destructive',
+      });
+    },
+  });
+
+  const handleCheckout = useCallback(() => {
+    if (user) {
+      mutate({
+        configId: id,
+      });
+    } else {
+      localStorage.setItem('configurationId', id);
+      setIsLoginModalOpen(true);
+    }
+  }, []);
 
   return (
     <>
       <div aria-hidden='true' className='pointer-events-none select-none absolute inset-0 overflow-hidden flex justify-center'>
         <Confetti active={showConfetti} config={{ elementCount: 200, spread: 90 }} />
       </div>
+
+      <LoginModal isOpen={isLoginModalOpen} setIsOpen={setIsLoginModalOpen} />
+
       <div className='mt-20 flex flex-col items-center md:grid text-sm sm:grid-cols-12 sm:grid-rows-1 sm:gap-x-6 md:gap-x-8 lg:gap-x-12'>
         <div className='md:col-span-4  lg:col-span-3 md:row-span-2 md:row-end-2'>
           <Phone className={cn(`bg-${tw}`, 'max-w-[150px] md:max-w-full')} imgSrc={configuration.croppedImageUrl!} />
@@ -123,7 +160,7 @@ export const DesingPreview = ({ configuration }: { configuration: Configuration 
             </div>
 
             <div className='mt-8 flex justify-end pb-12'>
-              <Button onClick={() => handleCheckout()} className='px-4 sm:px-6 lg:px-8'>
+              <Button onClick={handleCheckout} className='px-4 sm:px-6 lg:px-8'>
                 Check out <ArrowRight className='h-4 w-4 ml-1.5 inline' />
               </Button>
             </div>
