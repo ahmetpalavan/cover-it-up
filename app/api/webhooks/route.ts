@@ -63,7 +63,7 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json({ result: event, ok: true });
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message, ok: false }, { status: 500 });
+  } catch (error) {
+    return NextResponse.json({ error: 'Error', ok: false }, { status: 500 });
   }
 }
