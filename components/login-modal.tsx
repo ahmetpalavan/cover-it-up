@@ -1,9 +1,9 @@
-import React, { Dispatch, SetStateAction } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
-import { Button, buttonVariants } from './ui/button';
-import Image from 'next/image';
-import { DialogDescription } from '@radix-ui/react-dialog';
 import { LoginLink, RegisterLink } from '@kinde-oss/kinde-auth-nextjs';
+import { DialogDescription } from '@radix-ui/react-dialog';
+import Image from 'next/image';
+import { Dispatch, SetStateAction } from 'react';
+import { buttonVariants } from './ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
 
 interface LoginModalProps {
   isOpen: boolean;

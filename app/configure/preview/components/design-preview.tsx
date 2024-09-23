@@ -66,7 +66,7 @@ export const DesingPreview = ({ configuration }: { configuration: Configuration 
         router.push(url);
       } else throw new Error('Unable to retrieve payment URL.');
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast({
         title: `Error: ${error.message}`,
         description: 'There was an error on our end. Please try again.',
@@ -84,7 +84,7 @@ export const DesingPreview = ({ configuration }: { configuration: Configuration 
       localStorage.setItem('configurationId', id);
       setIsLoginModalOpen(true);
     }
-  }, []);
+  }, [id, mutate, user]);
 
   return (
     <>

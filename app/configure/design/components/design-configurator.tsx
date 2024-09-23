@@ -1,8 +1,10 @@
 'use client';
 
 import { RadioGroup } from '@headlessui/react';
-import { ArrowRight, Check, ChevronsUpDown, Loader, Loader2 } from 'lucide-react';
+import { useMutation } from '@tanstack/react-query';
+import { ArrowRight, Check, ChevronsUpDown, Loader2 } from 'lucide-react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { useRef, useState } from 'react';
 import { Rnd } from 'react-rnd';
 import { AspectRatio } from '~/components/ui/aspect-ratio';
@@ -15,10 +17,8 @@ import { toast } from '~/hooks/use-toast';
 import { useUploadThing } from '~/lib/uploadthing';
 import { cn, formatPrice } from '~/lib/utils';
 import { COLORS, FINISHES, MATERIALS, MODELS } from '~/validators/option-validator';
-import { HandleComponent } from './handle-component';
-import { useMutation } from '@tanstack/react-query';
 import { SaveConfigArgs, saveConfig as _saveConfig } from '../actions';
-import { useRouter } from 'next/navigation';
+import { HandleComponent } from './handle-component';
 
 interface DesignConfiguratorProps {
   configId: string;
@@ -61,7 +61,7 @@ export const DesignConfigurator = ({ configId, imageDimensions, imageUrl }: Desi
     mutationFn: async (args: SaveConfigArgs) => {
       await Promise.all([saveConfiguration(), _saveConfig(args)]);
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast({
         title: `Error: ${error.message}`,
         description: 'There was an error on our end. Please try again.',
