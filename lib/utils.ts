@@ -40,5 +40,6 @@ export function constructMetadata({
       creator: '@ahmetpalavan',
     },
     icons,
+    metadataBase: new URL('https://coverit-up.vercel.app/'),
   };
 }
