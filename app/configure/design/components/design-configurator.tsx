@@ -306,6 +306,8 @@ export const DesignConfigurator = ({ configId, imageDimensions, imageUrl }: Desi
                 {formatPrice((BASE_PRICE + options.finish.price + options.material.price) / 100)}
               </p>
               <Button
+                isLoading={isPending}
+                loadingText='Saving...'
                 disabled={isPending}
                 onClick={() => {
                   saveConfig({
