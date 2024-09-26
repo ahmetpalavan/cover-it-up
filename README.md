@@ -1,36 +1,65 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Cover It Up
 
-## Getting Started
+Cover It Up is a web application that allows users to customize phone cases by uploading their own images or designs. The app provides an intuitive interface for customizing, previewing, and ordering personalized phone cases.
 
-First, run the development server:
+## Project Features
+
+- **Phone Case Customization**: Users can upload their images or designs to create personalized phone cases.
+- **Drag-and-Drop**: Easy-to-use drag-and-drop functionality for positioning images on the case.
+- **Real-Time Preview**: Live preview of how the case will look after customization.
+- **User Authentication**: Secure user login and session management.
+- **Stripe Integration**: Seamless payment processing for case orders.
+- **Image Upload**: Users can upload high-resolution images with support for multiple formats.
+- **Confetti Animation**: Celebrate successful orders with confetti animations.
+
+## Technologies Used
+
+- **Next.js**: Framework for server-side rendering and static site generation.
+- **TypeScript**: Strongly-typed JavaScript for scalable development.
+- **Prisma**: ORM for database management.
+- **MongoDB**: NoSQL database for storing user and order data.
+- **Tailwind CSS**: Utility-first CSS framework for styling.
+- **Radix UI**: Accessible and composable UI primitives for React.
+- **Framer Motion**: Powerful animations and transitions for React.
+- **Stripe**: Payment processing integration for order transactions.
+- **React Query (TanStack Query)**: Data fetching, caching, and synchronization.
+- **Resend**: Email API for sending order confirmations and updates.
+- **React Dropzone**: File upload functionality for customizing phone cases.
+- **Sharp**: Image processing for generating phone case previews.
+- **Zod**: Validation schema for form inputs and backend requests.
+
+## Installation and Setup
+
+Follow these steps to set up and run the project locally:
+
+### Install Dependencies
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Start Development Server
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+To run the application locally:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+bun run dev
+```
 
-## Learn More
+This command will start the development server and open the application in your browser at http://localhost:3000.
 
-To learn more about Next.js, take a look at the following resources:
+### Build for Production
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+To build the application for production:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+bun run build
+```
 
-## Deploy on Vercel
+## Commands
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **dev**: Starts the development server.
+- **build**: Builds the application for production.
+- **start**: Starts the application in production mode.
+- **lint**: Runs ESLint to check the code.
+- **postinstall**: Runs Prisma's generate command to set up the client.
